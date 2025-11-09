@@ -4,18 +4,17 @@ import {
 	CSSProperties, //TypeScript тип для стилей React
 	useState, //хук React для управления состоянием
 } from 'react';
-import clsx from 'clsx'; //Утилита для удобного объединения CSS классов
 
 import { Article } from './components/article/Article';
 import { ArticleParamsForm } from './components/article-params-form/ArticleParamsForm';
-import { defaultArticleState, OptionType } from './constants/articleProps';
+import { defaultArticleState } from './constants/articleProps';
 
 import './styles/index.scss';
 import styles from './styles/index.module.scss';
 
 //Создание корня приложения
 const domNode = document.getElementById('root') as HTMLDivElement;
-const root = createRoot(domNode);//Создает корневой элемент React для рендеринга
+const root = createRoot(domNode); //Создает корневой элемент React для рендеринга
 
 const App = () => {
 	// Создаем состояние для формы
@@ -34,7 +33,7 @@ const App = () => {
 
 	return (
 		<main
-			className={clsx(styles.main)}
+			className={styles.main}
 			style={
 				{
 					'--font-family': currentFormState.fontFamilyOption.value,
