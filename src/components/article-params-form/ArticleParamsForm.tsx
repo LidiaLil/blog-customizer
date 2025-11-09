@@ -24,22 +24,26 @@ type ArticleParamsFormProps = {
 	formState: typeof defaultArticleState; // Текущее состояние формы
 	onApply: (formState: typeof defaultArticleState) => void; //функция применения настроек
 	onReset: () => void; //функция сброса настроек статьи
-	onChangeForm: (
-		key: keyof typeof defaultArticleState,
-		value: OptionType
-	) => void; //функция изменения состояния формы
-	//keyof typeof defaultArticleState - получает все ключи этого типа
 };
 
 export const ArticleParamsForm = (props: ArticleParamsFormProps) => {
 	const [isOpen, setIsOpen] = useState(false); //открытие/закрытие панели
-	const sidebarRef = useRef<HTMLElement>(null); //ссылка на форму, чтобы отслеживать клики вне
+	// Ссылка на DOM элемент сайдбара для обработки кликов вне области
+	const sidebarRef = useRef<HTMLElement>(null);
 	const {
-		formState, //текущее состояние формы
-		onApply, //функция применения настроек
-		onReset, //функция сброса настроек статьи
-		onChangeForm, //функция изменения состояния формы
+		formState, // Текущее состояние статьи (уже примененные настройки)
+		onApply, // Функция вызываемая при нажатии "Применить"
+		onReset, // Функция вызываемая при нажатии "Сбросить"
 	} = props; //деструктуризация пропсов
+
+	// ЛОКАЛЬНОЕ состояние формы для временного хранения изменений
+	// Пока пользователь не нажал "Применить", изменения сохраняются только здесь
+	const [localFormState, setLocalFormState] = useState(formState);
+
+	// Обновляем локальное состояние когда меняются пропсы или открывается сайдбар
+	useEffect(() => {
+		setLocalFormState(formState); // Обновляем локальное состояние при изменении пропсов
+	}, [formState, isOpen]); // Зависимости: formState и isOpen
 
 	// Функция для переключения состояния (открытия/закрытия) сайдбара
 	const toggleSidebar = () => {
@@ -51,16 +55,29 @@ export const ArticleParamsForm = (props: ArticleParamsFormProps) => {
 		setIsOpen(false);
 	};
 
-	// Обработчик отправки формы
+	// Обработчик отправки формы (Применить)
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault(); // Предотвращаем перезагрузку страницы
-		onApply(formState); // Вызываем функцию применения настроек
+		onApply(localFormState); // Вызываем функцию применения настроек
 		closeSidebar(); // Закрываем сайдбар после применения
 	};
 
 	// Обработчик сброса формы
 	const handleReset = () => {
+		setLocalFormState(defaultArticleState); // Сбрасываем локальное состояние к default
 		onReset(); // Вызываем функцию сброса настроек
+	};
+
+	// Универсальный обработчик изменения любого поля формы
+	const handleChangeField = (
+		key: keyof typeof defaultArticleState,
+		value: OptionType
+	) => {
+		// Обновляем состояние, сохраняя предыдущие значения и изменяя только указанное поле
+		setLocalFormState((prevState) => ({
+			...prevState, // Копируем все поля из предыдущего состояния
+			[key]: value, // Обновляем только конкретное поле (key) новым значением (value)
+		}));
 	};
 
 	// Закрытие при клике вне компонента
@@ -95,15 +112,15 @@ export const ArticleParamsForm = (props: ArticleParamsFormProps) => {
 
 	return (
 		<>
-			{/* Передаем состояние и функцию в ArrowButton */}
+			{/* Кнопка-стрелка для открытия/закрытия сайдбара */}
 			<ArrowButton isOpen={isOpen} onClick={toggleSidebar} />
-			{/* Добавляем ref и условный класс */}
+			{/* Сайдбар с формой настроек */}
 			<aside
 				ref={sidebarRef}
 				className={clsx(styles.container, {
 					[styles.container_open]: isOpen,
 				})}>
-				{/* Добавляем обработчики onSubmit и onReset */}
+				{/* Форма с обработчиками отправки и сброса */}
 				<form
 					className={styles.form}
 					onSubmit={handleSubmit}
@@ -115,9 +132,9 @@ export const ArticleParamsForm = (props: ArticleParamsFormProps) => {
 
 					{/* СЕКЦИЯ: ШРИФТ */}
 					<Select
-						selected={formState.fontFamilyOption}
+						selected={localFormState.fontFamilyOption}
 						options={fontFamilyOptions}
-						onChange={(value) => onChangeForm('fontFamilyOption', value)}
+						onChange={(value) => handleChangeField('fontFamilyOption', value)} // Обработчик изменения
 						title='Шрифт'
 					/>
 
@@ -126,7 +143,7 @@ export const ArticleParamsForm = (props: ArticleParamsFormProps) => {
 						name='fontSize'
 						selected={formState.fontSizeOption}
 						options={fontSizeOptions}
-						onChange={(value) => onChangeForm('fontSizeOption', value)}
+						onChange={(value) => handleChangeField('fontSizeOption', value)}
 						title='Размер шрифта'
 					/>
 
@@ -134,7 +151,7 @@ export const ArticleParamsForm = (props: ArticleParamsFormProps) => {
 					<Select
 						selected={formState.fontColor}
 						options={fontColors}
-						onChange={(value) => onChangeForm('fontColor', value)}
+						onChange={(value) => handleChangeField('fontColor', value)}
 						title='цвет шрифта'
 					/>
 
@@ -144,7 +161,7 @@ export const ArticleParamsForm = (props: ArticleParamsFormProps) => {
 					<Select
 						selected={formState.backgroundColor}
 						options={backgroundColors}
-						onChange={(value) => onChangeForm('backgroundColor', value)}
+						onChange={(value) => handleChangeField('backgroundColor', value)}
 						title='цвет фона'
 					/>
 
@@ -152,7 +169,7 @@ export const ArticleParamsForm = (props: ArticleParamsFormProps) => {
 					<Select
 						selected={formState.contentWidth}
 						options={contentWidthArr}
-						onChange={(value) => onChangeForm('contentWidth', value)}
+						onChange={(value) => handleChangeField('contentWidth', value)}
 						title='Ширина контента'
 					/>
 

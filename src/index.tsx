@@ -31,17 +31,6 @@ const App = () => {
 		// console.log('Сбрасываем настройки');
 		setCurrentFormState(defaultArticleState);
 	};
-	// Функция изменения отдельного поля
-	const handleChangeForm = (
-		key: keyof typeof defaultArticleState,
-		value: OptionType
-	) => {
-		// console.log('Изменяем');
-		setCurrentFormState((prevState) => ({
-			...prevState,
-			[key]: value,
-		}));
-	};
 
 	return (
 		<main
@@ -60,7 +49,6 @@ const App = () => {
 				formState={currentFormState}
 				onApply={handleApply}
 				onReset={handleReset}
-				onChangeForm={handleChangeForm}
 			/>
 			<Article />
 		</main>
