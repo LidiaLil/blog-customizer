@@ -1,20 +1,27 @@
+//конфигурация для системы настройки внешнего вида статьи
+
+//возможные варианты шрифтов для статьи
 export const fontFamilyClasses = [
 	'open-sans',
 	'ubuntu',
 	'cormorant-garamond',
 	'days-one',
 	'merriweather',
-] as const;
+] as const; //указание, что это кортеж с неизменяемыми значениями
 
+//(typeof fontFamilyClasses)[number] создает union тип из всех элементов массива
+//Получается тип: 'open-sans' | 'ubuntu' | 'cormorant-garamond' | 'days-one' | 'merriweather'
 export type FontFamiliesClasses = (typeof fontFamilyClasses)[number];
 
+//Это универсальный тип для всех вариантов выборав форме (шрифт, цвет и т.д.)
 export type OptionType = {
-	title: string;
-	value: string;
-	className: string;
-	optionClassName?: string;
+	title: string; // Отображаемое название
+	value: string; // Значение для логики
+	className: string; // CSS-класс для применения стиля
+	optionClassName?: string; // CSS-класс для отображения в селекте
 };
 
+//варианты выбора шрифтов с соответствующими классами для визуального отображения
 export const fontFamilyOptions: OptionType[] & {
 	optionClassName?: FontFamiliesClasses;
 } = [
@@ -33,12 +40,13 @@ export const fontFamilyOptions: OptionType[] & {
 	},
 ];
 
+//варианты выбора цветов шрифта
 export const fontColors: OptionType[] = [
 	{
-		title: 'Черный',
-		value: '#000000',
-		className: 'font-black',
-		optionClassName: 'option-black',
+		title: 'Черный', //отображаемое название
+		value: '#000000', //значение для логики
+		className: 'font-black', //CSS-класс для применения стиля
+		optionClassName: 'option-black', //для отображения в селекте(в выпадающем списке)
 	},
 	{
 		title: 'Белый',
@@ -90,12 +98,13 @@ export const fontColors: OptionType[] = [
 	},
 ];
 
+//варианты выбора цветов фона статьи
 export const backgroundColors: OptionType[] = [
 	{
-		title: 'Белый',
-		value: '#FFFFFF',
-		className: 'bg-white',
-		optionClassName: 'option-white',
+		title: 'Белый', //отображаемое название
+		value: '#FFFFFF', //значение для логики
+		className: 'bg-white', //CSS-класс для применения стиля
+		optionClassName: 'option-white', //для отображения в селекте(в выпадающем списке)
 	},
 	{
 		title: 'Черный',
@@ -147,12 +156,13 @@ export const backgroundColors: OptionType[] = [
 	},
 ];
 
+//варианты выбора ширины контента статьи
 export const contentWidthArr: OptionType[] = [
 	{
-		title: 'Широкий',
-		value: '1394px',
-		className: 'width-wide',
-		optionClassName: 'option-wide',
+		title: 'Широкий', //отображаемое название
+		value: '1394px', //Конкретное значение ширины
+		className: 'width-wide', //CSS-класс для применения стиля (ширины)
+		optionClassName: 'option-wide', //для отображения в селекте(в выпадающем списке)
 	},
 	{
 		title: 'Узкий',
@@ -162,12 +172,14 @@ export const contentWidthArr: OptionType[] = [
 	},
 ];
 
+//варианты выбора размера шрифта статьи
 export const fontSizeOptions: OptionType[] = [
 	{ title: '18px', value: '18px', className: 'font-size-18' },
 	{ title: '25px', value: '25px', className: 'font-size-25' },
 	{ title: '38px', value: '38px', className: 'font-size-38' },
 ];
 
+//объект, содержащий начальные значения по умолчанию для всех параметров настройки статьи
 export const defaultArticleState = {
 	fontFamilyOption: fontFamilyOptions[0],
 	fontColor: fontColors[0],
@@ -176,4 +188,5 @@ export const defaultArticleState = {
 	fontSizeOption: fontSizeOptions[0],
 };
 
+//Тип для состояния статьи, основанный на структуре defaultArticleState
 export type ArticleStateType = typeof defaultArticleState;
